@@ -38,14 +38,21 @@ def predict():
         ]
         
         if model is None:
-            # FIXED: Extracts ONLY the 6th index position item value (rainfall) from list array
             rainfall_value = input_features[6]
             if rainfall_value > 150:
                 predicted_crop = "rice"
             elif rainfall_value > 100:
                 predicted_crop = "maize"
             else:
-                predicted_crop = random.choice(['chilli', 'cotton', 'coffee'])
+                # UPDATED: Expanded array list containing all major agricultural products
+                all_crops = [
+                    'chilli', 'cotton', 'coffee', 'jute', 'coconut', 
+                    'papaya', 'orange', 'apple', 'mango', 'banana', 
+                    'pomegranate', 'grapes', 'watermelon', 'muskmelon', 
+                    'kidneybeans', 'mothbeans', 'mungbean', 
+                    'blackgram', 'lentil', 'chickpea'
+                ]
+                predicted_crop = random.choice(all_crops)
         else:
             final_features = [np.array(input_features)]
             prediction = model.predict(final_features)
