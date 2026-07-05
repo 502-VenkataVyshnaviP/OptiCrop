@@ -1,0 +1,20 @@
+# Epic 5: Application Building — Run the Application
+
+### 1. Home Page Module
+The home page is displayed upon launching the application:
+
+<img src="static/home_bg.jpg" width="600" alt="Home Page Screenshot">
+
+---
+
+### 2. About Page Module
+Clicking "About" in the navigation redirects to the about page:
+
+<img src="static/about_bg.jpg" width="600" alt="About Page Screenshot">
+
+---
+
+### 3. FindYourCrop Page Module
+Clicking "Find Your Crop" redirects to the prediction form. Enter environmental conditions and click "Predict" to receive a crop recommendation:
+
+<img src="static/findyourcrop.jpg" width="600" alt="FindYourCrop Page Screenshot">
