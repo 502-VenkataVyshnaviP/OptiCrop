@@ -6,9 +6,9 @@ OptiCrop is an end-to-end data-driven production engine designed to advance prec
 
 ## 👥 Core Project Team
 * **Venkata Vyshnavi Pachipala** — *Team Lead*
-* **Divya Teja Pattem** — *Developer / Member*
-* **Shilpa Reddy** — *Member*
-* **Tejaswini Sudha** — *Member*
+* **Divya Teja Pattem** — *team member*
+* **Shilpa Reddy** — *team member*
+* **Tejaswini Sudha** — *team member*
 
 ---
 
