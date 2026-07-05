@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OptiCrop - About</title>
+    <style>
+        /* FULL SCREEN BACKGROUND DISPLAY */
+        html, body { 
+            height: 100%; margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #2e7d32; 
+            background-image: url("{{ url_for('static', filename='about_bg.jpg') }}");
+            background-repeat: no-repeat; background-position: center center; background-size: cover; background-attachment: fixed;
+            overflow-y: auto;
+        }
+
+        /* NAVIGATION BAR */
+        .topnav { 
+            background-color: #0b4c28; overflow: hidden; display: flex; align-items: center;
+            padding: 0 20px; position: relative; z-index: 2000; box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            height: 54px; box-sizing: border-box;
+        }
+        
+        /* NAVBAR LOGO ANCHOR SLOT */
+        .nav-logo-wrapper {
+            width: 175px; height: 44px; margin-right: 20px; flex-shrink: 0; position: relative;
+            display: flex; align-items: center;
+        }
+
+        /* STATIC RECTANGULAR BRAND LOGO CARD (Matches home page end state) */
+        .nav-logo-card-static {
+            background-color: #ffffff;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            overflow: hidden;
+            position: absolute; top: 4px; left: 0;
+            width: 175px; height: 46px; padding: 4px 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            z-index: 2000;
+        }
+
+        /* STATIC CARD COMPONENT TYPOGRAPHY RULES */
+        .logo-main-row { display: flex; align-items: center; gap: 8px; }
+        
+        .logo-text-bold { 
+            font-size: 16px; font-weight: 900; color: #1b8543; letter-spacing: 0.2px; font-family: Arial, sans-serif;
+        }
+        .logo-text-bold span { color: #81c784; }
+        
+        .logo-subtitle { 
+            font-size: 6px; font-weight: bold; color: #ff9800; letter-spacing: 1px; 
+            text-transform: uppercase; margin-top: 1px; white-space: nowrap; font-family: Arial, sans-serif;
+        }
+        
+        .logo-icon {
+            font-size: 14px; display: inline-block; line-height: 1;
+        }
+        
+        .topnav-links { display: flex; align-items: center; height: 100%; }
+        .topnav a { color: white; text-align: center; padding: 0 20px; text-decoration: none; font-size: 16px; font-weight: bold; line-height: 54px; display: inline-block; height: 54px; }
+        .topnav a:hover { background-color: #08331c; }
+        .topnav a.active { background-color: #1b8543; }
+
+        /* ABOUT CONTENT AREA OVERLAY */
+        .about-content {
+            max-width: 900px;
+            margin: 60px 0 0 40px;
+            padding: 20px;
+            color: #ffffff;
+            box-sizing: border-box;
+        }
+
+        /* TYPING EFFECT FOR THE MAIN HEADER */
+        .typing-header {
+            font-size: 34px;
+            font-weight: bold;
+            margin: 0 0 25px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            white-space: nowrap;
+            overflow: hidden;
+            width: 0;
+            border-right: 3px solid #ffffff; /* Typing cursor line marker */
+            
+            /* Rules: types out text over 2.5s, then hides cursor indicator blinking at 3s mark */
+            animation: 
+                typeMachine 2.5s steps(45) forwards,
+                blinkCursor 0.6s step-end infinite,
+                hideCursor 0.1s forwards 3s;
+        }
+
+        /* WRITING FADE EFFECT FOR THE PARAGRAPH BLOCK */
+        .about-content p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin: 0;
+            font-weight: normal;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
+            text-align: justify;
+            
+            /* Starts fading and printing upward right after header finishes writing */
+            opacity: 0;
+            transform: translateY(10px);
+            animation: textWriteIn 1.2s ease-out forwards;
+            animation-delay: 2.8s;
+        }
+
+        /* ANIMATION TIMELINES */
+        @keyframes typeMachine {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blinkCursor {
+            from, to { border-color: transparent; }
+            50% { border-color: #ffffff; }
+        }
+
+        @keyframes hideCursor {
+            to { border-right-color: transparent; }
+        }
+
+        @keyframes textWriteIn {
+            0% {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="topnav">
+  <div class="nav-logo-wrapper">
+      <!-- FIXED: Beautiful static version of your exact logo card -->
+      <div class="nav-logo-card-static">
+          <div class="logo-main-row">
+              <span class="logo-icon">🌾</span> 
+              <div class="logo-text-bold">OPTI<span>CROP</span></div>
+          </div>
+          <div class="logo-subtitle">Smart Agri Optimization</div>
+      </div>
+  </div>
+  <div class="topnav-links">
+      <a href="/">Home</a>
+      <a href="/about" class="active">About</a>
+      <a href="/findyourcrop">FindYourCrop</a>
+  </div>
+</div>
+
+<div class="about-content">
+    <!-- Clean typed header wrapper hook -->
+    <h1 class="typing-header">Opti Crop Smart Agricultural Optimization Using ML</h1>
+    <p>
+        The project "Opti Crop: Smart Agricultural Production Optimization Engine" aims to develop an advanced 
+        software system that utilizes data-driven insights to optimize agricultural production for different crops. By 
+        integrating key environmental factors such as Nitrogen (N), Phosphorous (P), Potassium (K) levels, soil 
+        temperature, humidity, pH, rainfall, and crop types, Opti Crop seeks to provide intelligent recommendations to 
+        farmers for maximizing yields and resource efficiency. The knowledge and insights gained through the Opti 
+        Crop project...
+    </p>
+</div>
+
+</body>
+</html>

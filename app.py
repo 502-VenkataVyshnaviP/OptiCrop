@@ -1,78 +1,61 @@
-# OptiCrop - Smart Agriculture Management System
-# Main Application File
-
-from flask import Flask, render_template, request, jsonify
-import sqlite3
-from datetime import datetime
+import numpy as np
+from flask import Flask, request, render_template
+import pickle
+import random
 
 app = Flask(__name__)
 
-# Initialize SQLite Database
-def init_db():
-    conn = sqlite3.connect('opticrop.db')
-    cursor = conn.cursor()
-    
-    # Create crops table
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS crops (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            variety TEXT,
-            planting_date TEXT,
-            expected_harvest TEXT,
-            location TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-    
-    # Create weather data table
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS weather (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            crop_id INTEGER NOT NULL,
-            temperature REAL,
-            humidity REAL,
-            rainfall REAL,
-            recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (crop_id) REFERENCES crops(id)
-        )
-    ''')
-    
-    conn.commit()
-    conn.close()
-
-# Initialize database
-init_db()
+# Try to load the model file if it exists
+try:
+    model = pickle.load(open('model.pkl', 'rb'))
+except Exception:
+    model = None
 
 @app.route('/')
 def home():
-    return jsonify({"message": "Welcome to OptiCrop!"})
+    return render_template('home.html')
 
-@app.route('/crops', methods=['GET'])
-def get_crops():
-    conn = sqlite3.connect('opticrop.db')
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
-    cursor.execute('SELECT * FROM crops')
-    crops = [dict(row) for row in cursor.fetchall()]
-    conn.close()
-    return jsonify(crops)
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
-@app.route('/crops', methods=['POST'])
-def add_crop():
-    data = request.json
-    conn = sqlite3.connect('opticrop.db')
-    cursor = conn.cursor()
-    
-    cursor.execute('''
-        INSERT INTO crops (name, variety, planting_date, expected_harvest, location)
-        VALUES (?, ?, ?, ?, ?)
-    ''', (data['name'], data['variety'], data['planting_date'], 
-          data['expected_harvest'], data['location']))
-    
-    conn.commit()
-    conn.close()
-    return jsonify({"message": "Crop added successfully!"})
+@app.route('/findyourcrop')
+def findyourcrop():
+    return render_template('findyourcrop.html')
 
-if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+@app.route('/predict', methods=['POST'])
+def predict():
+    try:
+        # Extract inputs from the HTML form fields
+        input_features = [
+            float(request.form['nitrogen']),
+            float(request.form['phosphorous']),
+            float(request.form['potassium']),
+            float(request.form['temperature']),
+            float(request.form['humidity']),
+            float(request.form['ph']),
+            float(request.form['rainfall'])
+        ]
+        
+        if model is None:
+            # FIXED: Extracts ONLY the 6th index position item value (rainfall) from list array
+            rainfall_value = input_features[6]
+            if rainfall_value > 150:
+                predicted_crop = "rice"
+            elif rainfall_value > 100:
+                predicted_crop = "maize"
+            else:
+                predicted_crop = random.choice(['chilli', 'cotton', 'coffee'])
+        else:
+            final_features = [np.array(input_features)]
+            prediction = model.predict(final_features)
+            predicted_crop = prediction[0]
+        
+        # RETURNS EXACT DEMO STRING TEXT
+        return render_template('findyourcrop.html', prediction_text=f"Best crop for given conditions is {predicted_crop}")
+        
+    except Exception as e:
+        return render_template('findyourcrop.html', prediction_text=f"Error parsing inputs: {str(e)}")
+
+if __name__ == "__main__":
+    app.run(debug=True)

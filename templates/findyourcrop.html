@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OptiCrop - FindYourCrop</title>
+    <style>
+        /* FULL SCREEN OVERLAY ENGINE RULES */
+        html, body { 
+            height: 100%; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background-color: #2e7d32; 
+            background-image: url("{{ url_for('static', filename='findyourcrop.jpg') }}?v=95");
+            background-repeat: no-repeat; background-position: center center; background-size: cover; background-attachment: fixed;
+            overflow-y: auto; 
+        }
+
+        /* NAVIGATION HEADER */
+        .topnav { 
+            background-color: #0b4c28; overflow: hidden; display: flex; align-items: center;
+            padding: 0 20px; position: relative; z-index: 2000; box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            height: 54px; box-sizing: border-box;
+        }
+        
+        /* NAVBAR LOGO ANCHOR SLOT */
+        .nav-logo-wrapper {
+            width: 175px; height: 44px; margin-right: 20px; flex-shrink: 0; position: relative;
+            display: flex; align-items: center;
+        }
+
+        /* STATIC RECTANGULAR BRAND LOGO CARD */
+        .nav-logo-card-static {
+            background-color: #ffffff;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            overflow: hidden;
+            position: absolute; top: 4px; left: 0;
+            width: 175px; height: 46px; padding: 4px 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            z-index: 2000;
+        }
+
+        /* CARD COMPONENT TYPOGRAPHY */
+        .logo-main-row { display: flex; align-items: center; gap: 8px; }
+        
+        .logo-text-bold { 
+            font-size: 16px; font-weight: 900; color: #1b8543; letter-spacing: 0.2px; font-family: Arial, sans-serif;
+        }
+        .logo-text-bold span { color: #81c784; }
+        
+        .logo-subtitle { 
+            font-size: 6px; font-weight: bold; color: #ff9800; letter-spacing: 1px; 
+            text-transform: uppercase; margin-top: 1px; white-space: nowrap; font-family: Arial, sans-serif;
+        }
+        
+        .nav-logo-card-static .logo-icon {
+            font-size: 14px; display: inline-block; line-height: 1;
+        }
+        
+        .topnav-links { display: flex; align-items: center; height: 100%; }
+        .topnav a { color: white; text-align: center; padding: 0 20px; text-decoration: none; font-size: 16px; font-weight: bold; line-height: 54px; display: inline-block; height: 54px; }
+        .topnav a:hover { background-color: #08331c; }
+        .topnav a.active { background-color: #1b8543; }
+
+        /* FIXED EDGE-TO-EDGE HOT PINK HEADER BAR */
+        .form-header-strip { 
+            background-color: #ff0d72; padding: 12px 40px; text-align: right; box-sizing: border-box; width: 100%; 
+            opacity: 1; 
+        }
+        
+        /* SHARP CONTRAST STYLISH HEADING */
+        .form-header-strip h2 { 
+            margin: 0; color: #111111; font-family: 'Georgia', 'Times New Roman', serif; 
+            font-size: 34px; font-style: italic; font-weight: 900; letter-spacing: 0.5px;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
+        }
+
+        /* CONTAINER DESIGN CONFIG */
+        .main-container-area { 
+            display: flex; flex-direction: column; align-items: flex-end; padding: 20px 140px 140px 0; box-sizing: border-box; width: 100%;
+        }
+
+        /* POPUP SYSTEM COMPONENT CARD */
+        .form-card { 
+            background-color: rgba(0, 0, 0, 0.55); padding: 15px 20px; border-radius: 4px; width: 290px; 
+            box-sizing: border-box; display: flex; flex-direction: column; align-items: center;
+        }
+
+        .sub-heading { 
+            margin: 0 0 12px 0; color: #ffffff; font-weight: bold; font-size: 18px; font-style: italic; 
+            border-bottom: 2px solid #ff0d72; padding-bottom: 6px; width: 100%; text-align: center; white-space: nowrap; 
+        }
+
+        /* ROW STRUCTURAL CODES */
+        .form-group { 
+            display: flex; flex-direction: column; margin-bottom: 6px; width: 100%; align-items: center;
+        }
+
+        .form-group label { color: #ffffff; font-weight: bold; font-size: 12px; margin-bottom: 2px; }
+        .form-group input { 
+            width: 100%; padding: 5px 10px; border: 1px solid #7a7a7a; border-radius: 2px; font-size: 13px; 
+            box-sizing: border-box; background-color: #ffffff; color: #000000; text-align: center; 
+        }
+
+        /* PINNED SCREEN BOUND HOOK DESIGN LAYOUT */
+        .footer-action-wrapper {
+            position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1500; display: flex; flex-direction: column;
+        }
+
+        .submit-btn-strip {
+            width: 100%; background-color: #007bff; border: none; padding: 14px 0; color: #ffffff; 
+            font-size: 16px; font-weight: bold; cursor: pointer; text-align: center;
+        }
+        .submit-btn-strip:hover { background-color: #0056b3; }
+
+        .output-footer-strip { 
+            background-color: #000000; color: #ffffff; padding: 14px 40px; text-align: left; 
+            font-size: 18px; font-weight: bold; font-style: italic; width: 100%; box-sizing: border-box; 
+        }
+    </style>
+</head>
+<body>
+
+<div class="topnav">
+    <div class="nav-logo-wrapper">
+        <div class="nav-logo-card-static">
+            <div class="logo-main-row">
+                <span class="logo-icon">🌾</span> 
+                <div class="logo-text-bold">OPTI<span>CROP</span></div>
+            </div>
+            <div class="logo-subtitle">Smart Agri Optimization</div>
+        </div>
+    </div>
+    <div class="topnav-links">
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/findyourcrop" class="active">FindYourCrop</a>
+    </div>
+</div>
+
+<form action="/predict" method="POST">
+    
+    <div class="form-header-strip">
+        <h2>Find Your Best Crop Here</h2>
+    </div>
+
+    <div class="main-container-area">
+        <div class="form-card">
+            <div class="sub-heading">Please enter the conditions</div>
+            
+            <div class="form-group">
+                <label>Nitrogen:</label>
+                <input type="number" step="any" name="nitrogen" class="crop-input" placeholder="nitrogen" required>
+            </div>
+            <div class="form-group">
+                <label>Phosphorous:</label>
+                <input type="number" step="any" name="phosphorous" class="crop-input" placeholder="phosphorous" required>
+            </div>
+            <div class="form-group">
+                <label>Potassium:</label>
+                <input type="number" step="any" name="potassium" class="crop-input" placeholder="potassium" required>
+            </div>
+            <div class="form-group">
+                <label>Temperature:</label>
+                <input type="number" step="any" name="temperature" class="crop-input" placeholder="temperature" required>
+            </div>
+            <div class="form-group">
+                <label>Humidity:</label>
+                <input type="number" step="any" name="humidity" class="crop-input" placeholder="humidity" required>
+            </div>
+            <div class="form-group">
+                <label>pH:</label>
+                <input type="number" step="any" name="ph" class="crop-input" placeholder="ph" required>
+            </div>
+            <div class="form-group">
+                <label>Rainfall:</label>
+                <input type="number" step="any" name="rainfall" class="crop-input" placeholder="rainfall" required>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pinned bottom submit actions block -->
+    <div class="footer-action-wrapper">
+        <button type="submit" class="submit-btn-strip">Predict</button>
+        <div class="output-footer-strip">
+            <!-- FIXED: Prints only the backend string directly to prevent double sentences -->
+            {% if prediction_text %}
+                {{ prediction_text }}
+            {% elif prediction %}
+                Best crop for given conditions is {{ prediction }}
+            {% else %}
+                Engine Status: Waiting for environmental parameter conditions input
+            {% endif %}
+        </div>
+    </div>
+
+</form>
+
+</body>
+</html>

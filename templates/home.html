@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OptiCrop Engine</title>
+    <style>
+        /* FULL CANVAS BACKGROUND CONFIGURATION */
+        html, body { 
+            height: 100%; margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #2e7d32; 
+            background-image: url("{{ url_for('static', filename='home_bg.jpg') }}");
+            background-repeat: no-repeat; background-position: center center; background-size: cover; background-attachment: fixed;
+            overflow: hidden; position: relative;
+        }
+
+        /* FIXED BACKGROUND SHEET */
+        .splash-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: rgba(11, 76, 40, 0.45); 
+            z-index: 5000; pointer-events: none;
+            animation: fadeOutOverlay 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            animation-delay: 1.5s;
+        }
+
+        /* FOREST GREEN NAVBAR PANEL */
+        .topnav { 
+            background-color: #0b4c28; overflow: hidden; display: flex; align-items: center;
+            padding: 0 20px; position: relative; z-index: 2000; box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            height: 54px; box-sizing: border-box;
+        }
+        
+        /* THE NAVBAR ANCHOR HOUSING */
+        .nav-logo-wrapper {
+            width: 175px; height: 44px; margin-right: 20px; flex-shrink: 0; position: relative;
+        }
+
+        /* CODE-BUILT LOGO CONTAINER */
+        .nav-logo-card {
+            background-color: #ffffff !important; /* Forces solid crisp white background */
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            overflow: hidden;
+            position: absolute; top: 0; left: 0; 
+            z-index: 6000; /* FIXED: Placed higher than the splash-overlay (5000) to keep it bright and clear */
+            width: 320px; height: 110px; padding: 12px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            animation: unbreakableLogoFly 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        /* INNER LOGO CONTENT */
+        .logo-main-row { display: flex; align-items: center; gap: 8px; }
+        
+        .logo-text-bold { 
+            font-size: 26px; font-weight: 900; color: #1b8543; letter-spacing: 1px; font-family: Arial, sans-serif;
+            animation: shrinkTitle 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+        .logo-text-bold span { color: #81c784; }
+        
+        .logo-subtitle { 
+            font-size: 10px; font-weight: bold; color: #ff9800; letter-spacing: 1.5px; margin-top: 2px; text-transform: uppercase; font-family: Arial, sans-serif;
+            animation: shrinkSubtitle 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+        
+        .logo-icon {
+            font-size: 24px; display: inline-block; line-height: 1;
+            animation: shrinkIcon 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+        
+        .topnav-links { display: flex; align-items: center; height: 100%; }
+        .topnav a { color: white; text-align: center; padding: 0 20px; text-decoration: none; font-size: 16px; font-weight: bold; line-height: 54px; display: inline-block; height: 54px; }
+        .topnav a:hover { background-color: #08331c; }
+        .topnav a.active { background-color: #1b8543; }
+
+        /* HERO LAYOUT CONFIG */
+        .main-layout { position: relative; z-index: 10; height: calc(100vh - 54px); box-sizing: border-box; padding: 40px 40px; }
+
+        /* DESCRIPTION CARD */
+        .info-card-box { 
+            background-color: #ffffff; max-width: 630px; padding: 25px 35px; border-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); text-align: left; border-left: 6px solid #1b8543;
+            opacity: 0; animation: cardPopUp 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; animation-delay: 2.1s;
+        }
+        .info-card-box h1 { margin: 0 0 15px 0; font-size: 26px; font-weight: bold; color: #0b4c28; }
+        .info-card-box p { margin: 0; font-size: 15px; color: #444444; line-height: 1.6; font-weight: normal; }
+
+        /* WATERMARK */
+        .center-watermark {
+            position: absolute; left: 50%; top: 62%; transform: translate(-50%, -50%);
+            font-size: 90px; font-weight: bold; color: #1c2616; letter-spacing: 26px;
+            opacity: 0; white-space: nowrap; font-family: Arial, sans-serif; pointer-events: none;
+            animation: watermarkFadePop 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; animation-delay: 2.3s;
+        }
+
+        /* WIDGET BAR */
+        .right-widget-bar { position: absolute; right: 45px; top: 130px; display: flex; flex-direction: column; gap: 14px; z-index: 15; }
+        .widget-circle {
+            width: 30px; height: 30px; background-color: #ffffff; border-radius: 50%; box-shadow: 0 3px 6px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; 
+            transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s; opacity: 0; animation: widgetPopOut 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .widget-circle:hover { background-color: #f0f0f0; box-shadow: 0 4px 8px rgba(0,0,0,0.25); }
+        .widget-circle.active-grow { transform: scale(2.0) !important; box-shadow: 0 6px 14px rgba(0,0,0,0.4); background-color: #ffffff; z-index: 100; }
+        
+        /* Widget timings */
+        .widget-circle:nth-child(1) { animation-delay: 2.4s; }
+        .widget-circle:nth-child(2) { animation-delay: 2.5s; }
+        .widget-circle:nth-child(3) { animation-delay: 2.6s; }
+        .widget-circle:nth-child(4) { animation-delay: 2.7s; }
+        .widget-circle:nth-child(5) { animation-delay: 2.8s; }
+        .widget-circle:nth-child(6) { animation-delay: 2.9s; }
+
+        /* --- STABLE TIMELINE ENGINE --- */
+        @keyframes fadeOutOverlay {
+            0% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+        
+        @keyframes unbreakableLogoFly {
+            0%, 40% {
+                position: fixed;
+                top: 50%; left: 50%;
+                transform: translate(-50%, -50%) scale(1);
+                width: 320px; height: 110px;
+                border-radius: 12px;
+                box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+                z-index: 6000;
+            }
+            41% {
+                position: absolute;
+                top: calc(50vh - 27px - 55px); 
+                left: calc(50vw - 20px - 160px);
+                transform: translate(0, 0);
+                width: 320px; height: 110px;
+                border-radius: 12px;
+                box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+                z-index: 6000;
+            }
+            100% {
+                position: absolute;
+                top: 4px; left: 0;
+                transform: translate(0, 0);
+                width: 175px; height: 46px;
+                padding: 4px 10px;
+                border-radius: 6px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+                z-index: 2000;
+            }
+        }
+
+        @keyframes shrinkTitle {
+            0%, 40% { font-size: 26px; letter-spacing: 1px; }
+            100% { font-size: 16px; letter-spacing: 0.2px; }
+        }
+        @keyframes shrinkSubtitle {
+            0%, 40% { font-size: 10px; opacity: 1; height: auto; margin-top: 2px; }
+            100% { font-size: 6px; opacity: 1; height: auto; margin-top: 1px; }
+        }
+        @keyframes shrinkIcon {
+            0%, 40% { font-size: 24px; }
+            100% { font-size: 14px; }
+        }
+        @keyframes cardPopUp {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes watermarkFadePop {
+            0% { opacity: 0; transform: translate(-50%, -30%) scale(0.9); }
+            100% { opacity: 0.45; transform: translate(-50%, -50%) scale(1); }
+        }
+        @keyframes widgetPopOut {
+            0% { opacity: 0; transform: scale(0.4) translateX(20px); }
+            100% { opacity: 1; transform: scale(1) translateX(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="splash-overlay"></div>
+
+<div class="topnav">
+  <div class="nav-logo-wrapper">
+      <div class="nav-logo-card">
+          <div class="logo-main-row">
+              <span class="logo-icon">🌾</span> 
+              <div class="logo-text-bold">OPTI<span>CROP</span></div>
+          </div>
+          <div class="logo-subtitle">Smart Agri Optimization</div>
+      </div>
+  </div>
+  <div class="topnav-links">
+      <a href="/" class="active">Home</a>
+      <a href="/about">About</a>
+      <a href="/findyourcrop">FindYourCrop</a>
+  </div>
+</div>
+
+<div class="main-layout">
+    <div class="info-card-box">
+        <h1>Opti Crop Agricultural Optimisation</h1>
+        <p>
+            The main purpose of the OptiCrop aims to develop an advanced software system that utilizes data-driven machine learning insights to optimize agricultural production for different crops.
+        </p>
+    </div>
+
+    <div class="center-watermark">opti-crop</div>
+
+    <div class="right-widget-bar">
+        <div class="widget-circle">🌱</div>
+        <div class="widget-circle">☁️</div> 
+        <div class="widget-circle">💧</div>
+        <div class="widget-circle">🌾</div> 
+        <div class="widget-circle">☀️</div> 
+        <div class="widget-circle">📍</div>
+    </div>
+</div>
+
+<script>
+    const widgets = document.querySelectorAll('.widget-circle');
+    widgets.forEach(widget => {
+        widget.addEventListener('click', () => {
+            widgets.forEach(w => {
+                if (w !== widget) w.classList.remove('active-grow');
+            });
+            widget.classList.toggle('active-grow');
+    });
+});
